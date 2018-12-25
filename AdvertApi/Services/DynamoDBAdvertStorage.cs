@@ -21,7 +21,7 @@ namespace AdvertApi.Services
         {
             var dbModel = _mapper.Map<AdvertDbModel>(model);
 
-            dbModel.Id = new Guid().ToString();
+            dbModel.Id = Guid.NewGuid().ToString();
             dbModel.CreationDateTime = DateTime.UtcNow;
             dbModel.Status = AdvertStatus.Pending;
 
@@ -58,6 +58,7 @@ namespace AdvertApi.Services
                     if (record == null) throw new KeyNotFoundException($"A record with ID={model.Id} was not found.");
                     if (model.Status == AdvertStatus.Active)
                     {
+                        record.FilePath = model.FilePath;
                         record.Status = AdvertStatus.Active;
                         await context.SaveAsync(record);
                     }

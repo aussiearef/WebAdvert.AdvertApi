@@ -4,7 +4,7 @@ using Amazon.DynamoDBv2.DataModel;
 
 namespace AdvertApi.Services
 {
-    [DynamoDBTable("Advert")]
+    [DynamoDBTable("Adverts")]
     public class AdvertDbModel
     {
         [DynamoDBHashKey] public string Id { get; set; }
