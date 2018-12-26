@@ -1,8 +1,4 @@
-﻿using System;
-using AdvertApi.Models;
-using Amazon.DynamoDBv2.DataModel;
-
-namespace AdvertApi.Services
+﻿namespace AdvertApi.Services
 {
     [DynamoDBTable("Adverts")]
     public class AdvertDbModel
@@ -20,5 +16,7 @@ namespace AdvertApi.Services
         [DynamoDBProperty] public AdvertStatus Status { get; set; }
 
         [DynamoDBProperty] public string FilePath { get; set; }
+
+        [DynamoDBProperty] public string UserName { get; set; }
     }
 }

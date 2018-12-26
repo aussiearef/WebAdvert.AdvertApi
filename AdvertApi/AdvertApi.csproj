@@ -15,6 +15,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\AdvertApi.Models\AdvertApi.Models.csproj" />
+    <ProjectReference Include="..\AdvertApi.Models\AdvertApi.Models.csproj" />
   </ItemGroup>
 
 

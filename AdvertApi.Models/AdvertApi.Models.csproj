@@ -7,7 +7,7 @@
     <Product>Web Advert Microservices</Product>
     <PackageProjectUrl>https://github.com/aussiearef/WebAdvert.AdvertApi</PackageProjectUrl>
     <RepositoryUrl>https://github.com/aussiearef/WebAdvert.AdvertApi</RepositoryUrl>
-    <Version>1.0.1</Version>
+    <Version>1.0.2</Version>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
   </PropertyGroup>
 
