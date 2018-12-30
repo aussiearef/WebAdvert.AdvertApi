@@ -4,8 +4,7 @@ using System.Threading.Tasks;
 using AdvertApi.Models;
 using AdvertApi.Services;
 using Microsoft.AspNetCore.Mvc;
-
-// For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+using Newtonsoft.Json;
 
 namespace AdvertApi.Controllers
 {
@@ -18,6 +17,7 @@ namespace AdvertApi.Controllers
         public Advert(IAdvertStorageService advertStorageService)
         {
             _advertStorageService = advertStorageService;
+            _mapper = mapper;
         }
 
         [HttpPost]
@@ -40,7 +40,7 @@ namespace AdvertApi.Controllers
                 return StatusCode(500, exception.Message);
             }
 
-            return StatusCode(201, new CreateAdvertResponse {Id = recordId});
+            return StatusCode(201, new CreateAdvertResponse { Id = recordId });
         }
 
         [HttpPut]
@@ -63,6 +63,28 @@ namespace AdvertApi.Controllers
             }
 
             return new OkResult();
+        }
+
+        [HttpGet]
+        [Route("{id}")]
+        [ProducesResponseType(404)]
+        [ProducesResponseType(200)]
+        public async Task<IActionResult> Get(string id)
+        {
+            try
+            {
+                var advert= await _advertStorageService.GetById(id);
+                return new JsonResult(advert);
+
+            }
+            catch (KeyNotFoundException)
+            {
+                return new NotFoundResult();
+            }
+            catch (Exception)
+            {
+                return new StatusCodeResult(500);
+            }
         }
     }
 }

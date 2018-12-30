@@ -1,4 +1,8 @@
-﻿namespace AdvertApi.Services
+﻿using System;
+using AdvertApi.Models;
+using Amazon.DynamoDBv2.DataModel;
+
+namespace AdvertApi.Services
 {
     [DynamoDBTable("Adverts")]
     public class AdvertDbModel
