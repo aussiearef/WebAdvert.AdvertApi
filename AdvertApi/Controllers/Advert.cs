@@ -2,8 +2,11 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using AdvertApi.Models;
+using AdvertApi.Models.Messages;
 using AdvertApi.Services;
+using Amazon.SimpleNotificationService;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
 
 namespace AdvertApi.Controllers
@@ -14,10 +17,12 @@ namespace AdvertApi.Controllers
     {
         private readonly IAdvertStorageService _advertStorageService;
 
-        public Advert(IAdvertStorageService advertStorageService)
+        public IConfiguration Configuration { get; }
+
+        public Advert(IAdvertStorageService advertStorageService, IConfiguration configuration)
         {
             _advertStorageService = advertStorageService;
-            _mapper = mapper;
+            Configuration = configuration;
         }
 
         [HttpPost]
@@ -52,6 +57,7 @@ namespace AdvertApi.Controllers
             try
             {
                 await _advertStorageService.Confirm(model);
+                await RaiseAdvertConfirmedMessage(model);
             }
             catch (KeyNotFoundException)
             {
@@ -65,6 +71,24 @@ namespace AdvertApi.Controllers
             return new OkResult();
         }
 
+        private async Task RaiseAdvertConfirmedMessage(ConfirmAdvertModel model)
+        {
+            var topicArn = Configuration.GetValue<string>("TopicArn");
+            var dbModel = await _advertStorageService.GetById(model.Id);
+
+            using (var client = new AmazonSimpleNotificationServiceClient())
+            {
+                var message = new AdvertConfirmedMessage
+                {
+                    Id = model.Id,
+                    Title = dbModel.Title
+                };
+
+                var messageJson = JsonConvert.SerializeObject(message);
+                await client.PublishAsync(topicArn, messageJson);
+            }
+        }
+
         [HttpGet]
         [Route("{id}")]
         [ProducesResponseType(404)]
@@ -73,7 +97,7 @@ namespace AdvertApi.Controllers
         {
             try
             {
-                var advert= await _advertStorageService.GetById(id);
+                var advert = await _advertStorageService.GetById(id);
                 return new JsonResult(advert);
 
             }
