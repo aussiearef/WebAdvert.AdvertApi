@@ -13,6 +13,7 @@ namespace AdvertApi.Controllers
 {
     [ApiController]
     [Route("adverts/v1")]
+    [Produces("application/json")]
     public class Advert : ControllerBase
     {
         private readonly IAdvertStorageService _advertStorageService;
@@ -109,6 +110,14 @@ namespace AdvertApi.Controllers
             {
                 return new StatusCodeResult(500);
             }
+        }
+
+        [HttpGet]
+        [Route("all")]
+        [ProducesResponseType(200)]
+        public async Task<List<AdvertModel>> All()
+        {
+            return await _advertStorageService.GetAll();
         }
     }
 }
