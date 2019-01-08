@@ -5,6 +5,7 @@ using AdvertApi.Models;
 using AdvertApi.Models.Messages;
 using AdvertApi.Services;
 using Amazon.SimpleNotificationService;
+using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
@@ -115,6 +116,7 @@ namespace AdvertApi.Controllers
         [HttpGet]
         [Route("all")]
         [ProducesResponseType(200)]
+        [EnableCors("AllOrigin")]
         public async Task<List<AdvertModel>> All()
         {
             return await _advertStorageService.GetAll();
