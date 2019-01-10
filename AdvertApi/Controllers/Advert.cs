@@ -19,13 +19,13 @@ namespace AdvertApi.Controllers
     {
         private readonly IAdvertStorageService _advertStorageService;
 
-        public IConfiguration Configuration { get; }
-
         public Advert(IAdvertStorageService advertStorageService, IConfiguration configuration)
         {
             _advertStorageService = advertStorageService;
             Configuration = configuration;
         }
+
+        public IConfiguration Configuration { get; }
 
         [HttpPost]
         [Route("Create")]
@@ -36,7 +36,7 @@ namespace AdvertApi.Controllers
             string recordId;
             try
             {
-                recordId = await _advertStorageService.Add(model);
+                recordId = await _advertStorageService.AddAsync(model);
             }
             catch (KeyNotFoundException)
             {
@@ -47,7 +47,7 @@ namespace AdvertApi.Controllers
                 return StatusCode(500, exception.Message);
             }
 
-            return StatusCode(201, new CreateAdvertResponse { Id = recordId });
+            return StatusCode(201, new CreateAdvertResponse {Id = recordId});
         }
 
         [HttpPut]
@@ -58,7 +58,7 @@ namespace AdvertApi.Controllers
         {
             try
             {
-                await _advertStorageService.Confirm(model);
+                await _advertStorageService.ConfirmAsync(model);
                 await RaiseAdvertConfirmedMessage(model);
             }
             catch (KeyNotFoundException)
@@ -76,7 +76,7 @@ namespace AdvertApi.Controllers
         private async Task RaiseAdvertConfirmedMessage(ConfirmAdvertModel model)
         {
             var topicArn = Configuration.GetValue<string>("TopicArn");
-            var dbModel = await _advertStorageService.GetById(model.Id);
+            var dbModel = await _advertStorageService.GetByIdAsync(model.Id);
 
             using (var client = new AmazonSimpleNotificationServiceClient())
             {
@@ -99,9 +99,8 @@ namespace AdvertApi.Controllers
         {
             try
             {
-                var advert = await _advertStorageService.GetById(id);
+                var advert = await _advertStorageService.GetByIdAsync(id);
                 return new JsonResult(advert);
-
             }
             catch (KeyNotFoundException)
             {
@@ -117,9 +116,9 @@ namespace AdvertApi.Controllers
         [Route("all")]
         [ProducesResponseType(200)]
         [EnableCors("AllOrigin")]
-        public async Task<List<AdvertModel>> All()
+        public async Task<IActionResult> All()
         {
-            return await _advertStorageService.GetAll();
+            return new JsonResult(await _advertStorageService.GetAllAsync());
         }
     }
 }
