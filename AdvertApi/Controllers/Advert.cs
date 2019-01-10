@@ -116,13 +116,9 @@ namespace AdvertApi.Controllers
         [Route("all")]
         [ProducesResponseType(200)]
         [EnableCors("AllOrigin")]
-        public async Task<IActionResult> All(string userName)
+        public async Task<IActionResult> All()
         {
-            var returnedItems = await _advertStorageService.GetAllAsync(userName);
-
-            if (returnedItems == null) return new NotFoundResult();
-
-            return new JsonResult(returnedItems);
+            return new JsonResult(await _advertStorageService.GetAllAsync());
         }
     }
 }

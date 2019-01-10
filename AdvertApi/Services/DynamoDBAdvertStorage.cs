@@ -71,24 +71,15 @@ namespace AdvertApi.Services
             }
         }
 
-        public async Task<List<AdvertModel>> GetAllAsync(string userName)
+        public async Task<List<AdvertModel>> GetAllAsync()
         {
-            if (string.IsNullOrEmpty(userName)) return null;
-
-            var result = new List<AdvertDbModel>();
-
             using (var client = new AmazonDynamoDBClient())
             {
                 using (var context = new DynamoDBContext(client))
                 {
-                    var query = context.QueryAsync<AdvertDbModel>(userName, new DynamoDBOperationConfig
-                    {
-                        IndexName = "idxUserName"
-                    });
-
-                    while (!query.IsDone) result.AddRange(await query.GetNextSetAsync());
-
-                    return result.Select(item => _mapper.Map<AdvertModel>(item)).ToList();
+                    var scanResult =
+                        await context.ScanAsync<AdvertDbModel>(new List<ScanCondition>()).GetNextSetAsync();
+                    return scanResult.Select(item => _mapper.Map<AdvertModel>(item)).ToList();
                 }
             }
         }
